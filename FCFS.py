@@ -1,5 +1,4 @@
-
-cpu_schudule = [(3, 3),   # P1
+cpu_schedule = [(3, 3),   # P1
         (2, 1),   # P2
         (5, 2),   # P3
         (0, 3),   # P4
@@ -10,21 +9,21 @@ def fcfs(cpu_schedule):
     
     procs = [(f"P{i+1}", at, bt) for i, (at, bt) in enumerate(cpu_schedule)]
 
-   
+    
     order = sorted(procs, key=lambda p: (p[1], p[0]))
 
     time, results, gantt = 0, [], []
 
     for pid, at, bt in order:
-       
+        
         if time < at:
             gantt.append(("IDLE", time, at))
             time = at
 
-start = time
-        ct    = start + bt        # Completion Time
-        tat   = ct - at           # Turnaround Time
-        wt    = tat - bt          # Waiting Time
+        start = time
+        ct    = start + bt          # Completion Time
+        tat   = ct - at             # Turnaround Time
+        wt    = tat - bt            # Waiting Time
 
         gantt.append((pid, start, ct))
         results.append([pid, at, bt, ct, tat, wt])
@@ -58,6 +57,6 @@ def print_gantt(gantt):
 
 
 if __name__ == "__main__":
-    results, gantt = fcfs(cpu_schudule)
+    results, gantt = fcfs(cpu_schedule)
     print_results(results)
     print_gantt(gantt)
