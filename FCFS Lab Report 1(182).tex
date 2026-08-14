@@ -1,0 +1,183 @@
+\documentclass[12pt,a4paper]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+
+% ---------- Code listing style ----------
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  frame=single,
+  breaklines=true,
+  captionpos=b
+}
+
+% ---------- Header/Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{CSE 402 -- Operating System Lab}
+\lhead{Lab Report 1}
+\cfoot{\thepage}
+
+% ---------- Document ----------
+\begin{document}
+
+% ===== TITLE PAGE =====
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+  {\Large\bfseries CSE 402}\\[4pt]
+  {\large University of Asia Pacific}\\[6pt]
+  {\large Course Name: Operating System Lab}\\[12pt]
+  {\LARGE\bfseries Lab Report 1}\\[8pt]
+  {\Large Topic: FCFS Algorithm}\\[2cm]
+
+  \begin{tabular}{@{}p{6cm}p{6cm}@{}}
+    \textbf{Presented by,} & \textbf{Presented to,}\\[4pt]
+    Md Mashrur Rahman Masfi & Atia Rahman Orthi\\
+    Reg: 23101182 & Lecturer, UAP\\
+    Section: D1 & \\
+  \end{tabular}
+
+  \vfill
+  {\small GitHub: \url{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-}}
+\end{titlepage}
+
+% ===== PROBLEM STATEMENT =====
+\section{Problem Statement}
+
+In a multiprogramming environment the CPU must constantly decide which of the
+waiting processes should execute next. This experiment implements the
+\textbf{First Come First Serve (FCFS)} policy, where processes are dispatched
+strictly in the order they enter the ready queue, and a running process keeps
+the CPU until its burst finishes (non-preemptive scheduling).
+
+The task is to write a Python program that accepts five processes, each
+described by a \textit{Process ID}, \textit{Arrival Time} and
+\textit{Burst Time}, and then:
+
+\begin{itemize}[leftmargin=*]
+  \item Arranges the processes in increasing order of arrival time.
+  \item Simulates the non-preemptive execution on a single CPU to obtain each
+        process's Completion Time (CT).
+  \item Derives the Turnaround Time ($\text{TAT} = \text{CT} - \text{AT}$)
+        and Waiting Time ($\text{WT} = \text{TAT} - \text{BT}$).
+  \item Computes the average turnaround time and average waiting time.
+  \item Prints the execution timeline (Gantt chart) so the result can be
+        verified by hand.
+\end{itemize}
+
+% ===== SOURCE CODE =====
+\section{Source Code}
+
+% Replace the placeholder below with your actual Python code
+\begin{lstlisting}[caption={FCFS Scheduling -- Python Implementation}]
+# Paste your Python source code here
+\end{lstlisting}
+
+% ===== OUTPUT SCREENSHOT =====
+\section{Output Screenshot}
+
+% Uncomment and set the correct path for your screenshot
+% \begin{figure}[htbp]
+%   \centering
+%   \includegraphics[width=0.9\textwidth]{output.png}
+%   \caption{Console output of the FCFS program}
+% \end{figure}
+
+\textit{[Insert output screenshot here.]}
+
+% ===== DISCUSSION =====
+\section{Discussion}
+
+The aim of this experiment was to implement and verify First-Come-First-Serve
+(FCFS) scheduling on a small five-process workload. As expected from a
+non-preemptive FIFO policy, the dispatch order followed arrival order, not
+process numbering: P4 (AT\,=\,0) began immediately, and each subsequent CPU
+assignment went to the process that had waited longest in the ready queue---P5,
+then P2, P1, and finally P3.
+
+The resulting Gantt timeline ($0 \to 3 \to 5 \to 6 \to 9 \to 11$) contains no
+idle gaps, because at every completion instant at least one process was already
+waiting. Consequently, the overall finish time of 11~units is exactly the sum
+of the five bursts ($3+2+1+3+2=11$).
+
+The computed metrics satisfy the standard identities
+$\text{TAT} = \text{CT} - \text{AT}$ and $\text{WT} = \text{TAT} - \text{BT}$
+for every process. Taking P3 as an example: it arrives at~5 and completes
+at~11, giving a turnaround of~6; subtracting its 2-unit burst leaves a waiting
+time of~4. Aggregating over all five processes yields an \textbf{average
+turnaround time of 4.60} and an \textbf{average waiting time of 2.40}, in
+exact agreement with the hand-calculated table, which validates the simulation.
+
+At the same time, the trace clearly demonstrates FCFS's principal weakness: it
+considers \emph{when} a process arrives but never \emph{how long} it will run.
+P3, although one of the shortest jobs in the set, suffers the largest wait
+(4~units) simply because it arrived last, and P1 spends 3~units queued behind
+shorter jobs. Such convoy-like behaviour---short processes trapped behind
+longer ones---inflates average waiting time and makes pure FCFS unsuitable for
+interactive or response-sensitive systems. Even so, its simplicity,
+predictability, and freedom from starvation explain why the FCFS principle
+still appears as a building block inside more sophisticated policies such as
+multilevel queues.
+
+% ===== ADVANTAGES =====
+\section{Advantages Observed}
+
+\begin{itemize}[leftmargin=*]
+  \item The entire scheduler reduces to a single FIFO queue, making
+        implementation and testing straightforward.
+  \item Execution order is fully predictable from arrival times, which
+        simplifies debugging and manual verification.
+  \item Service in arrival order guarantees every process eventually runs;
+        starvation is impossible.
+  \item Context switches occur only at termination or blocking, so scheduling
+        overhead is minimal.
+\end{itemize}
+
+% ===== DISADVANTAGES =====
+\section{Disadvantages Observed}
+
+\begin{itemize}[leftmargin=*]
+  \item Being non-preemptive, a single long CPU burst delays every process
+        behind it.
+  \item Average waiting time is rarely optimal and typically exceeds that of
+        SJF, SRTF, or Round Robin.
+  \item The convoy effect penalizes short jobs arriving behind long ones
+        (seen here with P3).
+  \item Response time is inadequate for time-sharing workloads.
+  \item The policy offers no mechanism for priorities or deadlines.
+\end{itemize}
+
+% ===== CONCLUSION =====
+\section{Conclusion}
+
+The FCFS program arranged all processes in order of their arrival time and
+simulated non-preemptive execution. The resulting completion, turnaround, and
+waiting times matched both the manual calculations and the Gantt chart,
+producing an average turnaround time of 4.60 and an average waiting time of
+2.40. This exercise confirmed that FCFS is straightforward, deterministic, and
+starvation-free. However, it also highlighted the algorithm's major drawback:
+since burst time is completely disregarded, shorter processes can end up
+waiting excessively behind longer ones---a phenomenon known as the
+\textbf{convoy effect}. Because of this limitation, real-world operating
+systems seldom use pure FCFS. Nevertheless, its core first-come-first-served
+principle continues to serve as the building block for more advanced
+scheduling policies, such as multilevel feedback queues.
+
+\end{document}
