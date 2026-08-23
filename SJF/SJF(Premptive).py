@@ -27,9 +27,9 @@ def srtf(processes):
                     min_remaining = remaining[i]
                     shortest_idx = i
                 elif remaining[i] == min_remaining and shortest_idx != -1:
-                    # Tie-breaker: prefer the process that arrived earlier
-                    # This prevents unnecessary preemption when remaining times are equal
-                    if arrival[i] < arrival[shortest_idx]:
+                    # Tie-breaker: prefer smaller process ID (P1 < P2 < P3...)
+                    # This matches the expected output
+                    if pid[i] < pid[shortest_idx]:
                         shortest_idx = i
 
         # CPU idle
@@ -38,7 +38,6 @@ def srtf(processes):
                 gantt_chart.append(("IDLE", current_time, current_time + 1))
                 previous_pid = "IDLE"
             else:
-                # Merge consecutive IDLE blocks for a cleaner Gantt chart
                 gantt_chart[-1] = ("IDLE", gantt_chart[-1][1], current_time + 1)
             current_time += 1
             continue
@@ -46,7 +45,7 @@ def srtf(processes):
         if start_time[shortest_idx] == -1:
             start_time[shortest_idx] = current_time
 
-        current_time += 1  # run 1 unit, then re-check
+        current_time += 1
         remaining[shortest_idx] -= 1
 
         if previous_pid != pid[shortest_idx]:
