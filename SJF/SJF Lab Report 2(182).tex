@@ -1,0 +1,85 @@
+def sjf_non_preemptive(processes):
+    n = len(processes)
+    pid = [p[0] for p in processes]
+    arrival = [p[1] for p in processes]
+    burst = [p[2] for p in processes]
+    
+    completion = [0] * n
+    turnaround = [0] * n
+    waiting = [0] * n
+    response = [0] * n
+    is_completed = [False] * n
+    
+    current_time = 0
+    completed = 0
+    gantt_chart = []
+    
+    while completed < n:
+        # Find all available processes at current time
+        available = []
+        for i in range(n):
+            if arrival[i] <= current_time and not is_completed[i]:
+                available.append(i)
+        
+        # If no process is available, jump to next arrival
+        if not available:
+            next_arrival = min(arrival[i] for i in range(n) if not is_completed[i])
+            gantt_chart.append(("IDLE", current_time, next_arrival))
+            current_time = next_arrival
+            continue
+        
+        # Select process with shortest burst time (tie-breaker: arrival time)
+        shortest_idx = min(available, key=lambda i: (burst[i], arrival[i], pid[i]))
+        
+        # Record start time for response time
+        if response[shortest_idx] == 0:
+            response[shortest_idx] = current_time - arrival[shortest_idx]
+        
+        # Execute the process (non-preemptive - runs to completion)
+        start_time = current_time
+        current_time += burst[shortest_idx]
+        
+        # Add to Gantt chart
+        gantt_chart.append((pid[shortest_idx], start_time, current_time))
+        
+        # Calculate completion, turnaround, and waiting time
+        completion[shortest_idx] = current_time
+        turnaround[shortest_idx] = completion[shortest_idx] - arrival[shortest_idx]
+        waiting[shortest_idx] = turnaround[shortest_idx] - burst[shortest_idx]
+        
+        is_completed[shortest_idx] = True
+        completed += 1
+    
+    return {
+        'pid': pid, 'arrival': arrival, 'burst': burst,
+        'completion': completion, 'turnaround': turnaround,
+        'waiting': waiting, 'response': response,
+        'gantt_chart': gantt_chart
+    }
+
+
+processes = [
+    ('P1', 3, 3), ('P2', 2, 1), ('P3', 5, 2),
+    ('P4', 0, 3), ('P5', 1, 2)
+]
+
+result = sjf_non_preemptive(processes)
+
+print("Process\tArrival\tBurst\tCompletion\tTurnaround\tWaiting\tResponse")
+for i in range(len(result['pid'])):
+    print(f"{result['pid'][i]}\t{result['arrival'][i]}\t{result['burst'][i]}\t"
+          f"{result['completion'][i]}\t\t{result['turnaround'][i]}\t\t"
+          f"{result['waiting'][i]}\t\t{result['response'][i]}")
+
+print("\nGantt Chart:")
+for name, start, end in result['gantt_chart']:
+    print(f"[{name}: {start}->{end}]", end=" ")
+print()
+
+avg_turnaround = sum(result['turnaround']) / len(result['turnaround'])
+avg_waiting = sum(result['waiting']) / len(result['waiting'])
+avg_response = sum(result['response']) / len(result['response'])
+
+print(f"\nAverage Turnaround Time: {avg_turnaround}")
+print(f"Average Waiting Time: {avg_waiting}")
+print(f"Average Response Time: {avg_response}")
