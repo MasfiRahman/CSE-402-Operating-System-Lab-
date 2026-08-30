@@ -1,0 +1,312 @@
+\documentclass[12pt, a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{float}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=blue,
+}
+
+% Code listing setup
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4,
+    language=Python
+}
+\lstset{style=mystyle}
+
+% Title formatting
+\titleformat{\section}{\large\bfseries\uppercase}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% ================= TITLE PAGE / HEADER =================
+\begin{center}
+    \Large \textbf{University of Asia Pacific}\\
+    \vspace{0.2cm}
+    \large Department of Computer Science and Engineering\\
+    \vspace{0.5cm}
+    \textbf{\Large Course Name: Operating System Lab}\\
+    \textbf{\large Course Code: CSE 402}\\
+    \vspace{0.5cm}
+    \textbf{\huge Lab Report 3}\\
+    \vspace{0.3cm}
+    \textbf{\large Topic: Round Robin (Preemptive)}\\
+    \vspace{1cm}
+\end{center}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{cc}
+        \textbf{Presented by} & \textbf{Presented to} \\
+        \hline
+        Mashrur Rahman Masfi & Atia Rahman Orthi \\
+        Reg: 23101182 & Lecturer, UAP \\
+        Section: D1 & \\
+    \end{tabular}
+\end{table}
+
+\vfill
+\begin{center}
+    \textit{GitHub Repository: \href{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}{CSE-402-Operating-System-Lab}}
+\end{center}
+\newpage
+
+% ================= PROBLEM STATEMENT =================
+\section*{Problem Statement}
+Consider the following processes, each represented as (Process ID, Arrival Time, Burst Time). The time quantum is 5 units. Using the preemptive Round Robin scheduling algorithm, calculate: Completion Time (CT), Turnaround Time (TAT = CT $-$ AT), Waiting Time (WT = TAT $-$ BT), and the average TAT and WT.
+
+% ================= SOLUTION =================
+\section*{Solution (Step-by-step simulation, TQ = 5)}
+
+\subsection*{Process Table}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Process ID} & \textbf{Arrival Time (A.T)} & \textbf{Burst Time (B.T)} \\
+        \hline
+        P1 & 0 & 7 \\
+        P2 & 1 & 4 \\
+        P3 & 2 & 15 \\
+        P4 & 3 & 11 \\
+        P5 & 4 & 20 \\
+        P6 & 4 & 9 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection*{Gantt Chart Simulation}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \small
+    \begin{tabular}{|c|c|c|c|l|}
+        \hline
+        \textbf{Step} & \textbf{Time} & \textbf{Process} & \textbf{Remaining BT} & \textbf{Queue after execution} \\
+        \hline
+        1 & 0-5 & P1 & 2 & P2, P3, P4, P5, P6, P1 \\
+        2 & 5-9 & P2 & 0 & P3, P4, P5, P6, P1 \\
+        3 & 9-14 & P3 & 10 & P4, P5, P6, P1, P3 \\
+        4 & 14-19 & P4 & 6 & P5, P6, P1, P3, P4 \\
+        5 & 19-24 & P5 & 15 & P6, P1, P3, P4, P5 \\
+        6 & 24-29 & P6 & 4 & P1, P3, P4, P5, P6 \\
+        7 & 29-31 & P1 & 0 & P3, P4, P5, P6 \\
+        8 & 31-36 & P3 & 5 & P4, P5, P6, P3 \\
+        9 & 36-41 & P4 & 1 & P5, P6, P3, P4 \\
+        10 & 41-46 & P5 & 10 & P6, P3, P4, P5 \\
+        11 & 46-50 & P6 & 0 & P3, P4, P5 \\
+        12 & 50-55 & P3 & 0 & P4, P5 \\
+        13 & 55-56 & P4 & 0 & P5 \\
+        14 & 56-61 & P5 & 5 & P5 \\
+        15 & 61-66 & P5 & 0 & - \\
+        \hline
+    \end{tabular}
+\end{table}
+
+% ================= SOURCE CODE =================
+\section*{Source Code}
+\subsection*{SRTF (Preemptive SJF) Python Implementation}
+\begin{lstlisting}
+def srtf(processes):
+    n = len(processes)
+    pid = [p[0] for p in processes]
+    arrival = [p[1] for p in processes]
+    burst = [p[2] for p in processes]
+    remaining = burst.copy()
+    
+    completion = [0] * n
+    turnaround = [0] * n
+    waiting = [0] * n
+    response = [0] * n
+    start_time = [-1] * n
+    is_completed = [False] * n
+    
+    current_time = 0
+    completed = 0
+    gantt_chart = []
+    previous_pid = None
+    
+    while completed < n:
+        shortest_idx = -1
+        min_remaining = float('inf')
+        
+        for i in range(n):
+            if (arrival[i] <= current_time and 
+                not is_completed[i] and 
+                remaining[i] < min_remaining):
+                min_remaining = remaining[i]
+                shortest_idx = i
+                
+        # CPU idle
+        if shortest_idx == -1:
+            if previous_pid != "IDLE":
+                gantt_chart.append(("IDLE", current_time, current_time + 1))
+                previous_pid = "IDLE"
+            current_time += 1
+            continue
+            
+        if start_time[shortest_idx] == -1:
+            start_time[shortest_idx] = current_time
+            
+        current_time += 1  # run 1 unit, then re-check
+        remaining[shortest_idx] -= 1
+        
+        if previous_pid != pid[shortest_idx]:
+            gantt_chart.append((pid[shortest_idx], current_time - 1, current_time))
+        else:
+            gantt_chart[-1] = (pid[shortest_idx], gantt_chart[-1][1], current_time)
+            
+        previous_pid = pid[shortest_idx]
+        
+        if remaining[shortest_idx] == 0:
+            is_completed[shortest_idx] = True
+            completion[shortest_idx] = current_time
+            turnaround[shortest_idx] = completion[shortest_idx] - arrival[shortest_idx]
+            waiting[shortest_idx] = turnaround[shortest_idx] - burst[shortest_idx]
+            completed += 1
+            
+    for i in range(n):
+        response[i] = start_time[i] - arrival[i]
+        
+    return {
+        'pid': pid, 'arrival': arrival, 'burst': burst, 
+        'completion': completion, 'turnaround': turnaround, 
+        'waiting': waiting, 'response': response, 
+        'gantt_chart': gantt_chart
+    }
+
+processes = [
+    ('P1', 0, 7), ('P2', 1, 4), ('P3', 2, 15),
+    ('P4', 3, 11), ('P5', 4, 20), ('P6', 4, 9)
+]
+
+result = srtf(processes)
+n = len(processes)
+
+print("===== SRTF (Preemptive SJF) =====")
+print("Process\tArrival\tBurst\tCompletion\tTurnaround\tWaiting\tResponse")
+for i in range(n):
+    print(f"{result['pid'][i]}\t{result['arrival'][i]}\t{result['burst'][i]}\t"
+          f"{result['completion'][i]}\t\t{result['turnaround'][i]}\t\t"
+          f"{result['waiting'][i]}\t\t{result['response'][i]}")
+
+print("\nGantt Chart:")
+for name, start, end in result['gantt_chart']:
+    print(f"[{name}:{start}->{end}]", end="")
+print()
+
+print(f"\nAverage Turnaround Time: {round(sum(result['turnaround']) / n, 2)}")
+print(f"Average Waiting Time: {round(sum(result['waiting']) / n, 2)}")
+print(f"Average Response Time: {round(sum(result['response']) / n, 2)}")
+\end{lstlisting}
+
+% ================= OUTPUT SCREENSHOT =================
+\section*{Output Screenshot}
+\begin{center}
+    % \includegraphics[width=\textwidth]{output_screenshot.png} % Uncomment and add your image
+    \fbox{\parbox{0.8\textwidth}{\centering \vspace{2cm} [Insert Output Screenshot Here] \vspace{2cm}}}
+\end{center}
+
+% ================= COMPARISON =================
+\section*{Comparison between Round Robin (Preemptive) \& SJF (Preemptive)}
+
+\subsection*{Numeric Feature Comparison}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Metric} & \textbf{Round Robin} & \textbf{SRTF} \\
+        \hline
+        Average TAT & 42.17 & 27.15 \\
+        Average WT & 31.17 & 16.5 \\
+        Average RT & 9.5 & 6.0 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection*{Feature Comparison}
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Aspect} & \textbf{SJF (Preemptive)} & \textbf{Round Robin} \\
+        \hline
+        Selection & Shortest Remaining Burst Time & Order of arrival (cyclic) \\
+        Preemption Trigger & Shorter Job arrives & Time Quantum Expires \\
+        Starvation & Possible & Not Possible \\
+        Average Waiting Time & Minimum (optimal) & Higher than SRTF \\
+        Fairness & Not fair (prefers short jobs) & Fair \\
+        Use Case & Batch System, theoretical benchmark & Time Sharing/interactive system \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection*{Why SRTF (Preemptive SJF) is Better (Efficiency Perspective)}
+\begin{enumerate}
+    \item \textbf{Provably minimum waiting time:} SRTF always runs the job closest to completion, which greedily minimizes total waiting. On this input, it cuts average WT nearly in half (16.5 vs 31.17).
+    \item \textbf{Fewer wasteful context switches:} RR switches on every quantum expiry whether it helps or not (13 switches here); SRTF switches only when beneficial (6 switches), so less CPU time is lost to overhead.
+    \item \textbf{Short jobs finish fast:} P2 completes at $t=5$ under SRTF but $t=9$ under RR; quick completion of short jobs empties the ready queue faster and improves throughput.
+    \item \textbf{No quantum-tuning problem:} RR's performance depends heavily on the quantum (too large $\rightarrow$ behaves like FCFS; too small $\rightarrow$ overhead dominates). SRTF has no such parameter to tune.
+    \item \textbf{Better turnaround overall:} Average TAT drops from 42.17 (RR) to 27.5 (SRTF) on identical input.
+\end{enumerate}
+
+% ================= DISCUSSION =================
+\section*{Discussion}
+The experimental outputs transform the theoretical fairness-efficiency trade-off into a quantifiable reality. Under Round Robin (TQ = 5), the scheduler enforces strict egalitarianism: every process receives its first CPU slice by $t=24$, and the worst first-response delay is capped at 20 units (P6). Conversely, SRTF operates on a utilitarian principle; short jobs respond instantaneously (P2's response = 0), but long jobs are systematically deprioritized. P5 remains locked out until $t=46$, yielding a response time of 42---nearly three times worse than its RR counterpart. Consequently, RR's average response time (9.5) outperforms SRTF's (15.83), even as SRTF decisively wins on waiting time (16.5 vs. 31.17) and turnaround time (27.5 vs. 42.17). This proves that the two algorithms do not represent a hierarchy of quality, but rather optimize for fundamentally different operational goals.
+
+A critical secondary observation is the hidden cost of context switching. The RR Gantt chart exhibits 14 execution segments (13 context switches), several of which represent pure overhead. For instance, P4 is preempted at $t=41$ with only 1 unit of burst remaining, and P5's final two quantums run back-to-back, rendering the switch at $t=61$ entirely wasteful. SRTF completes the identical workload with only 7 segments (6 switches), switching only when a strictly shorter job arrives. RR pays a continuous ``overhead tax'' upon every quantum expiry, whereas SRTF's preemptions are strictly purposeful.
+
+Finally, the experiment highlights the distinct vulnerabilities of each approach. RR suffers from parameter sensitivity: a quantum of 20+ degrades it into FCFS, while a quantum of 1--2 causes thrashing via excessive context switching. SRTF, while parameter-free, suffers from informational dependency---it requires exact burst times in advance, which is rarely feasible outside of batch systems. In practical software engineering, such as managing asynchronous task queues in browser extensions (e.g., balancing UI rendering threads against background data-fetching jobs), this exact trade-off manifests. RR-style rotation keeps the user interface responsive, while SRTF-style prioritization minimizes the total completion time of background tasks.
+
+% ================= CONCLUSION =================
+\section*{Conclusion}
+This lab demonstrates that the concept of a ``better'' scheduling algorithm is entirely metric-dependent. Round Robin yields higher average waiting and turnaround times but provides a superior, evenly distributed response time and a mathematical guarantee against starvation. SRTF achieves near-optimal waiting and turnaround times but at the severe cost of starving long-running processes and requiring foreknowledge of burst lengths. 
+
+Therefore, Round Robin remains the superior default for interactive, time-sharing environments where user-perceived responsiveness and fairness are paramount. SRTF serves as the theoretical efficiency benchmark for offline, batch-processing workloads where burst lengths are known and throughput is the sole priority. Ultimately, the results explain why modern, practical operating systems avoid pure implementations of either. Instead, they utilize hybrid architectures like Multilevel Feedback Queues (MLFQ), which rotate processes in a Round Robin fashion while dynamically promoting or demoting them based on observed CPU burst behavior. This hybrid approach successfully captures the fairness and responsiveness of RR without entirely sacrificing the throughput efficiency of SRTF.
+
+\vfill
+\begin{center}
+    \textit{GitHub Repository: \href{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}{CSE-402-Operating-System-Lab}}
+\end{center}
+
+\end{document}
