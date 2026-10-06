@@ -1,0 +1,253 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=blue,
+}
+
+% Code styling for Python
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=8pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4,
+    language=Python
+}
+\lstset{style=mystyle}
+
+\begin{document}
+
+% ================= COVER PAGE =================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Huge \bfseries University of Asia Pacific \par}
+    \vspace{0.5cm}
+    {\Large \bfseries Department of Computer Science and Engineering \par}
+    \vspace{2cm}
+    {\huge \bfseries LAB REPORT \par}
+    \vspace{1.5cm}
+    
+    \begin{tabular}{l l}
+        \textbf{Course Title:} & Operating System Lab \\
+        \textbf{Course Code:} & CSE 402 \\
+        \textbf{Report Number:} & 04 \\
+        \textbf{Submission Date:} & 06/10/2026 \\
+    \end{tabular}
+    
+    \vspace{2.5cm}
+    
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushleft}
+            \textbf{Submitted By:} \\
+            Name: Mashrur Rahman Masfi \\
+            Registration No: 23101182 \\
+            Section: D(D1)
+        \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \begin{flushright}
+            \textbf{Submitted To:} \\
+            Atia Rahman Orthi \\
+            Lecturer \\
+            Dept. of CSE
+        \end{flushright}
+    \end{minipage}
+    
+    \vfill
+\end{titlepage}
+
+% ================= MAIN CONTENT =================
+\section*{Experiment 1: FCFS Disk Scheduling Algorithm}
+
+\subsection*{1. Theoretical Overview \& Problem Statement}
+The First-Come, First-Served (FCFS) algorithm is the most straightforward disk scheduling technique. It operates on a strict sequential basis, where the disk controller processes I/O requests exactly in the order they are received in the queue, without any prioritization or reordering.
+
+\textbf{Given Parameters:}
+\begin{itemize}
+    \item \textbf{Request Queue:} [55, 58, 39, 18, 90, 160, 150, 38, 184]
+    \item \textbf{Initial Head Position:} 100
+    \item \textbf{Scheduling Policy:} FCFS
+\end{itemize}
+
+\textbf{Execution Sequence:} \\
+Initiating at cylinder 100, the read/write head simply follows the queue's natural order. The traversal path is as follows: \\
+100 $\rightarrow$ 55 $\rightarrow$ 58 $\rightarrow$ 39 $\rightarrow$ 18 $\rightarrow$ 90 $\rightarrow$ 160 $\rightarrow$ 150 $\rightarrow$ 38 $\rightarrow$ 184
+
+\textbf{Mathematical Calculation:} \\
+The total seek time (head movement) is computed by summing the absolute differences between consecutive cylinder positions:
+\begin{align*}
+\text{Total Movement} &= |100 - 55| + |55 - 58| + |58 - 39| + |39 - 18| + |18 - 90| \\
+&\quad + |90 - 160| + |160 - 150| + |150 - 38| + |38 - 184| \\
+&= 45 + 3 + 19 + 21 + 72 + 70 + 10 + 112 + 146 \\
+&= \mathbf{498 \text{ cylinders}}
+\end{align*}
+
+\subsection*{2. Source Code Implementation}
+\begin{lstlisting}
+def fcfs_scheduling(requests, initial_head):
+    total_seek_time = 0
+    current_position = initial_head
+    seek_sequence = [current_position]
+    
+    print(f"Initial Head Position: {current_position}")
+    print("Processing Requests...")
+    
+    for request in requests:
+        distance = abs(current_position - request)
+        total_seek_time += distance
+        current_position = request
+        seek_sequence.append(current_position)
+        
+    print(f"\nSeek Sequence: {' -> '.join(map(str, seek_sequence))}")
+    print(f"Total Head Movement: {total_seek_time} cylinders")
+
+request_queue = [55, 58, 39, 18, 90, 160, 150, 38, 184]
+head_start = 100
+fcfs_scheduling(request_queue, head_start)
+\end{lstlisting}
+
+\subsection*{3. Output Screenshot}
+\textit{(Insert your FCFS output screenshot here)}
+
+\vspace{0.5cm}
+\hrule
+\vspace{0.5cm}
+
+\section*{Experiment 2: SCAN (Elevator) Disk Scheduling Algorithm}
+
+\subsection*{1. Theoretical Overview}
+The SCAN algorithm, frequently referred to as the "Elevator Algorithm," mitigates the inefficiencies of FCFS. The disk arm begins at one end of the disk and moves towards the opposite end, servicing requests encountered along its path. Upon reaching the disk boundary, it reverses its direction and continues the process.
+
+\textbf{Given Parameters:}
+\begin{itemize}
+    \item \textbf{Request Queue:} [55, 58, 39, 18, 90, 160, 150, 38, 184]
+    \item \textbf{Initial Head Position:} 100
+    \item \textbf{Disk Boundaries:} 0 (Left) and 200 (Right)
+\end{itemize}
+
+\subsection*{Case A: Left-Direction SCAN}
+\textbf{Execution Logic:} \\
+Initiating at cylinder 100, the head traverses towards the left (lower cylinders). It systematically services pending requests in descending order. Upon reaching the leftmost boundary (cylinder 0), it reverses direction to service the remaining requests on the right.
+
+\textbf{Seek Sequence:} \\
+100 $\rightarrow$ 90 $\rightarrow$ 58 $\rightarrow$ 55 $\rightarrow$ 39 $\rightarrow$ 38 $\rightarrow$ 18 $\rightarrow$ 0 $\rightarrow$ 184
+
+\textbf{Mathematical Calculation:}
+\begin{align*}
+\text{Total Movement} &= |100 - 90| + |90 - 58| + |58 - 55| + |55 - 39| + |39 - 38| \\
+&\quad + |38 - 18| + |18 - 0| + |0 - 184| \\
+&= 10 + 32 + 3 + 16 + 1 + 20 + 18 + 184 \\
+&= \mathbf{284 \text{ cylinders}}
+\end{align*}
+
+\textbf{Source Code Implementation:}
+\begin{lstlisting}
+def scan_left_scheduling(requests, initial_head, disk_end=0):
+    left_requests = sorted([r for r in requests if r <= initial_head], reverse=True)
+    max_request = max(requests)
+    seek_sequence = [initial_head] + left_requests + [disk_end] + [max_request]
+    
+    total_seek_time = sum(abs(seek_sequence[i] - seek_sequence[i+1]) 
+                          for i in range(len(seek_sequence) - 1))
+                          
+    print(f"Left SCAN Seek Sequence: {' -> '.join(map(str, seek_sequence))}")
+    print(f"Total Head Movement: {total_seek_time} cylinders")
+
+request_queue = [55, 58, 39, 18, 90, 160, 150, 38, 184]
+head_start = 100
+scan_left_scheduling(request_queue, head_start, disk_end=0)
+\end{lstlisting}
+
+\textit{(Insert your Left SCAN output screenshot here)}
+
+\vspace{0.5cm}
+
+\subsection*{Case B: Right-Direction SCAN}
+\textbf{Execution Logic:} \\
+Initiating at cylinder 100, the head traverses towards the right (higher cylinders). It services requests in ascending order until it hits the rightmost disk boundary (cylinder 200).
+
+\textbf{Seek Sequence:} \\
+100 $\rightarrow$ 150 $\rightarrow$ 160 $\rightarrow$ 184 $\rightarrow$ 200
+
+\textbf{Mathematical Calculation:}
+\begin{align*}
+\text{Total Movement} &= |100 - 150| + |150 - 160| + |160 - 184| + |184 - 200| \\
+&= 50 + 10 + 24 + 16 \\
+&= \mathbf{100 \text{ cylinders}}
+\end{align*}
+
+\textbf{Source Code Implementation:}
+\begin{lstlisting}
+def scan_right_scheduling(requests, initial_head, disk_end=200):
+    right_requests = sorted([r for r in requests if r >= initial_head])
+    seek_sequence = [initial_head] + right_requests + [disk_end]
+    
+    total_seek_time = sum(abs(seek_sequence[i] - seek_sequence[i+1]) 
+                          for i in range(len(seek_sequence) - 1))
+                          
+    print(f"Right SCAN Seek Sequence: {' -> '.join(map(str, seek_sequence))}")
+    print(f"Total Head Movement: {total_seek_time} cylinders")
+
+request_queue = [55, 58, 39, 18, 90, 160, 150, 38, 184]
+head_start = 100
+scan_right_scheduling(request_queue, head_start, disk_end=200)
+\end{lstlisting}
+
+\textit{(Insert your Right SCAN output screenshot here)}
+
+\vspace{0.5cm}
+\hrule
+\vspace{0.5cm}
+
+\section*{4. Conclusion \& Analysis}
+
+This laboratory experiment successfully demonstrated the practical implementation and performance analysis of two fundamental disk scheduling algorithms: FCFS and SCAN. The primary objective was to evaluate how varying scheduling logic impacts the physical movement of the disk arm and overall system efficiency.
+
+\textbf{Key Observations:}
+\begin{itemize}
+    \item \textbf{FCFS Inefficiency:} As expected, the FCFS algorithm yielded the highest total head movement (\textbf{498 cylinders}). Because it strictly follows the arrival order without considering the physical location of the requests, it causes excessive back-and-forth traversal.
+    \item \textbf{SCAN Optimization:} The SCAN algorithm significantly optimized the seek time by processing requests directionally. The Right-direction SCAN was the most efficient for this specific dataset, resulting in a minimal head movement of only \textbf{100 cylinders}. The Left-direction SCAN also performed substantially better than FCFS, requiring \textbf{284 cylinders}.
+\end{itemize}
+
+The empirical data conclusively proves that directional scheduling algorithms like SCAN are vastly superior to non-directional algorithms like FCFS. By minimizing unnecessary cylinder traversal, SCAN reduces mechanical wear on the disk drive and lowers the average response time for I/O requests. Furthermore, this lab reinforced our ability to translate theoretical OS concepts into functional Python logic, bridging the gap between academic theory and practical software engineering.
+
+\vspace{0.5cm}
+\textbf{GitHub Repository Link:} \\
+\href{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}
+
+\end{document}
