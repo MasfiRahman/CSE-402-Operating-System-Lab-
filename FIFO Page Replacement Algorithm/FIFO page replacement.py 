@@ -29,7 +29,7 @@ def fifo_paging(reference_string, frame_size):
     print("Fault Ratio:", fault_ratio)
 
 
-frame_size = 3
+frame_size = 4
 #for frame size 4
 #frame_size=4
 reference_string = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
