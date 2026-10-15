@@ -1,0 +1,141 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+
+% Code Listing Style
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=Python
+}
+\lstset{style=mystyle}
+
+\begin{document}
+
+% ================= TITLE PAGE =================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Huge \bfseries University of Asia Pacific \par}
+    \vspace{0.5cm}
+    {\Large \bfseries Department of Computer Science and Engineering \par}
+    \vspace{1.5cm}
+    {\huge \bfseries CSE 402: Operating Systems Lab \par}
+    \vspace{1cm}
+    {\LARGE \bfseries LAB REPORT \par}
+    \vspace{0.5cm}
+    {\Large Report Number: 05 \par}
+    \vspace{1cm}
+    {\Large \bfseries Title: SSTF Disk Scheduling \par}
+    \vspace{2cm}
+    
+    \begin{flushleft}
+        \large \textbf{Submitted by:} \\
+        Name: Mashrur Rahman Masfi \\
+        Student ID: 23101182 \\
+        Section: D1
+    \end{flushleft}
+    \vspace{1.5cm}
+    
+    \begin{flushleft}
+        \large \textbf{Submitted to:} \\
+        Atia Rahman Orthi \\
+        Lecturer \\
+        Department of Computer Science and Engineering
+    \end{flushleft}
+    \vspace{1.5cm}
+    
+    {\large Date of Submission: 15-10-2026 \par}
+    \vfill
+    {\large GitHub Repo: \href{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}{CSE-402-Operating-System-Lab} \par}
+\end{titlepage}
+
+% ================= MAIN CONTENT =================
+
+\section{Problem Statement}
+Write a Python program to implement the Shortest Seek Time First (SSTF) disk scheduling algorithm. The program should take the initial disk head position and a sequence of disk I/O requests as input. It should select the pending request closest to the current head position and serve it first until all requests have been completed. Finally, calculate and display the seek sequence and total head movement of the disk head.
+
+\textbf{Initial head position:} 50 \\
+\textbf{Requests:} [60, 20, 100, 10, 15, 22, 42]
+
+\section{Source Code}
+\begin{lstlisting}[caption={Python implementation of SSTF Disk Scheduling Algorithm}]
+def sstf_disk_scheduling(head, requests):
+    seek_sequence = []
+    total_head_movement = 0
+    remaining_requests = requests.copy()
+
+    while remaining_requests:
+        # Find the closest request to current head position
+        closest_request = min(remaining_requests, key=lambda x: abs(x - head))
+        
+        # Calculate seek distance and add to total
+        seek_distance = abs(closest_request - head)
+        total_head_movement += seek_distance
+        
+        # Update head position and add to sequence
+        seek_sequence.append(closest_request)
+        head = closest_request
+        
+        # Remove the served request
+        remaining_requests.remove(closest_request)
+
+    return seek_sequence, total_head_movement
+
+# Input
+head = 50
+requests = [60, 20, 100, 10, 15, 22, 42]
+
+# Execute SSTF algorithm
+seek_sequence, total_movement = sstf_disk_scheduling(head, requests)
+
+# Display results
+print("Initial head position:", head)
+print("Requests:", requests)
+print("\nSeek Sequence:", seek_sequence)
+print("Total Head Movement:", total_movement)
+\end{lstlisting}
+
+\section{Output ScreenShot}
+\begin{center}
+    % Replace 'sstf_output.png' with your actual image file name
+    \includegraphics[width=0.8\textwidth]{sstf_output.png} 
+\end{center}
+
+\section{Discussion}
+In this lab, the SSTF (Shortest Seek Time First) disk scheduling algorithm was implemented using Python. A predefined initial head position and a list of disk requests were used as input. The program selected the request closest to the current head position, calculated the seek distance, and repeated the process until all requests were served. Finally, the seek sequence and total head movement were displayed.
+
+\section{Conclusion}
+Through this lab, the working principle of the SSTF disk scheduling algorithm was understood and implemented successfully. The experiment demonstrated how selecting the nearest disk request can reduce unnecessary head movement. However, the algorithm may cause starvation for requests located far from the current head position.
+
+\vspace{2cm}
+\noindent \textbf{GitHub Repo link:} \href{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}
+
+\end{document}
