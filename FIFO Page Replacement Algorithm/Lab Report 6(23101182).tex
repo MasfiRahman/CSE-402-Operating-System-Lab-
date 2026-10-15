@@ -1,0 +1,150 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+
+% Code Listing Style
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\usepackage{color}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=Python
+}
+\lstset{style=mystyle}
+
+\begin{document}
+
+% ================= TITLE PAGE =================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Huge \bfseries University of Asia Pacific \par}
+    \vspace{0.5cm}
+    {\Large \bfseries Department of Computer Science and Engineering \par}
+    \vspace{1.5cm}
+    {\huge \bfseries CSE 402: Operating Systems Lab \par}
+    \vspace{1cm}
+    {\LARGE \bfseries LAB REPORT \par}
+    \vspace{0.5cm}
+    {\Large Report Number: 06 \par}
+    \vspace{1cm}
+    {\Large \bfseries Title: FIFO Page Replacement Algorithm \par}
+    \vspace{2cm}
+    
+    \begin{flushleft}
+        \large \textbf{Submitted by:} \\
+        Name: Mashrur Rahman Masfi \\
+        Student ID: 23101182 \\
+        Section: D1
+    \end{flushleft}
+    \vspace{1.5cm}
+    
+    \begin{flushleft}
+        \large \textbf{Submitted to:} \\
+        Atia Rahman Orthi \\
+        Lecturer \\
+        Department of Computer Science and Engineering
+    \end{flushleft}
+    \vspace{1.5cm}
+    
+    {\large Date of Submission: 15-10-2026 \par}
+    \vfill
+    {\large GitHub Repo: \href{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}{CSE-402-Operating-System-Lab} \par}
+\end{titlepage}
+
+% ================= MAIN CONTENT =================
+
+\section{Problem Statement}
+Write a Python program to implement the FIFO (First-In, First-Out) page replacement algorithm using a predefined reference string. Execute the program with frame sizes of 3 and 4 separately, calculate the total page hits, page faults, hit ratio, and fault ratio for each case, and compare the results to analyze the effect of frame size on paging performance.
+
+\textbf{Reference string:} [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
+
+\section{Source Code}
+\begin{lstlisting}[caption={Python implementation of FIFO Page Replacement Algorithm}]
+def fifo_page_replacement(reference_string, frame_size):
+    frames = []
+    page_faults = 0
+    page_hits = 0
+
+    for page in reference_string:
+        if page in frames:
+            page_hits += 1
+        else:
+            page_faults += 1
+            if len(frames) == frame_size:
+                frames.pop(0)  # Remove the oldest page (FIFO)
+            frames.append(page)
+
+    total_references = len(reference_string)
+    hit_ratio = page_hits / total_references
+    fault_ratio = page_faults / total_references
+
+    return page_hits, page_faults, hit_ratio, fault_ratio
+
+reference_string = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
+
+print("Frame Size = 3")
+hits3, faults3, hit_r3, fault_r3 = fifo_page_replacement(reference_string, 3)
+print(f"Page Hits: {hits3}, Page Faults: {faults3}")
+print(f"Hit Ratio: {hit_r3:.2f}, Fault Ratio: {fault_r3:.2f}\n")
+
+print("Frame Size = 4")
+hits4, faults4, hit_r4, fault_r4 = fifo_page_replacement(reference_string, 4)
+print(f"Page Hits: {hits4}, Page Faults: {faults4}")
+print(f"Hit Ratio: {hit_r4:.2f}, Fault Ratio: {fault_r4:.2f}")
+\end{lstlisting}
+
+\section{Output ScreenShot}
+\textbf{Frame Size = 3}
+\begin{center}
+    % Replace 'frame_size_3.png' with your actual image file name
+    \includegraphics[width=0.8\textwidth]{frame_size_3.png} 
+\end{center}
+
+\vspace{1cm}
+
+\textbf{Frame Size = 4}
+\begin{center}
+    % Replace 'frame_size_4.png' with your actual image file name
+    \includegraphics[width=0.8\textwidth]{frame_size_4.png}
+\end{center}
+
+\section{Comparison within FIFO Page Replacement Algorithm with frame size 3 and 4}
+In this experiment, the FIFO (First-In, First-Out) page replacement algorithm was tested using frame sizes of 3 and 4 with the same reference string. Surprisingly, the number of page faults increased from 9 to 10 when the frame size was increased from 3 to 4. This phenomenon is known as Belady's Anomaly, which can occur in the FIFO page replacement algorithm. It happens because FIFO replaces pages based on their arrival order rather than how frequently or recently they are used. Increasing the number of frames can change the replacement order, causing pages that are needed again later to be removed from memory. Consequently, the system may experience more page faults even though additional frames are available. This experiment demonstrates that increasing the frame size does not always improve paging performance when using the FIFO algorithm.
+
+\section{Discussion}
+In this lab, the FIFO page replacement algorithm was implemented using Python with a predefined reference string. The program was executed separately with frame sizes of 3 and 4 to compare their performance. For each case, the total page hits, page faults, hit ratio, and fault ratio were calculated. The results showed that increasing the frame size from 3 to 4 increased the number of page faults from 9 to 10. This demonstrates Belady's Anomaly, which can occur in FIFO because pages are replaced according to their arrival order. The experiment helped illustrate how frame size affects page replacement performance and why increasing the number of frames does not always reduce page faults.
+
+\section{Conclusion}
+In conclusion, the FIFO page replacement algorithm was successfully implemented and tested with different frame sizes. The experiment demonstrated that increasing the frame size does not always reduce the number of page faults. The occurrence of Belady's Anomaly highlighted a limitation of the FIFO algorithm. Through this lab, the relationship between frame size, page hits, page faults, and paging performance was better understood.
+
+\vspace{2cm}
+\noindent \textbf{GitHub Repo link:} \href{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}{https://github.com/MasfiRahman/CSE-402-Operating-System-Lab-.git}
+
+\end{document}
