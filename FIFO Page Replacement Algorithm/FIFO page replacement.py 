@@ -1,0 +1,37 @@
+def fifo_paging(reference_string, frame_size):
+    frames = []
+    page_hits = 0
+    page_faults = 0
+    pointer = 0
+
+    for page in reference_string:
+
+        if page in frames:
+            page_hits += 1
+
+        else:
+            page_faults += 1
+
+            if len(frames) < frame_size:
+                frames.append(page)
+            else:
+                frames[pointer] = page
+                pointer = (pointer + 1) % frame_size
+
+    total_references = len(reference_string)
+
+    hit_ratio = page_hits / total_references
+    fault_ratio = page_faults / total_references
+
+    print("Page Hits:", page_hits)
+    print("Page Faults:", page_faults)
+    print("Hit Ratio:", hit_ratio)
+    print("Fault Ratio:", fault_ratio)
+
+
+frame_size = 3
+#for frame size 4
+#frame_size=4
+reference_string = [1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5]
+
+fifo_paging(reference_string, frame_size)
